@@ -41,9 +41,9 @@ const Article = () => {
       <Box
         sx={{
           position: 'absolute',
-          left: '75px',
-          top: '150px',
-          width: '1290px',
+          top: '18%',
+          left: '15%',
+          right: '15%',
           height: '1001px',
           backgroundColor: '#fff',
           border: '1px solid #EAEAEA',
@@ -65,6 +65,11 @@ const Article = () => {
           {article.data.title}
         </Typography>
         <Typography sx={{ pl: '75px', pr: '75px', pb: '50px' }}>
+          {article.data.summary}
+          {article.data.summary}
+          {article.data.summary}
+          {article.data.summary}
+          {article.data.summary}
           {article.data.summary}
         </Typography>
       </Box>

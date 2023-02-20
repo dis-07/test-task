@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
 
 import { getPosts } from '../api';
@@ -18,6 +18,7 @@ const Articles = () => {
   const [articles, setArticles] = useState<any[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [text, setText] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
     getPosts().then((data) => {
@@ -25,6 +26,27 @@ const Articles = () => {
     });
     setLoading(false);
   }, []);
+
+  function handleChange(event: { target: { value: SetStateAction<string> } }) {
+    setSearchTerm(event.target.value);
+    setText(event.target.value);
+  }
+
+  function highlightSearchTerm(text: string) {
+    if (!searchTerm.trim()) {
+      return text;
+    }
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text
+      .split(regex)
+      .map((match, index) =>
+        match.toLowerCase() === searchTerm.toLowerCase() ? (
+          <mark key={index}>{match}</mark>
+        ) : (
+          match
+        )
+      );
+  }
 
   const filteredArticles = articles.filter((article) => {
     const resultTitle = article.title
@@ -35,24 +57,6 @@ const Articles = () => {
       .includes(text.toLocaleLowerCase());
     return resultTitle && resultSummary;
   });
-
-  // const Compo = ({ higlight, value }) => {
-  //   return <p>{getHighlightedText(value, higlight)}</p>;
-  // };
-
-  // function getHighlightedText(text: string, higlight: string) {
-  //   // Split text on higlight term, include term itself into parts, ignore case
-  //   var parts = text.split(new RegExp(`(${higlight})`, 'gi'));
-  //   return parts.map((part, index) => (
-  //     <React.Fragment key={index}>
-  //       {part.toLowerCase() === higlight.toLowerCase() ? (
-  //         <b style={{ backgroundColor: '#e8bb49' }}>{part}</b>
-  //       ) : (
-  //         part
-  //       )}
-  //     </React.Fragment>
-  //   ));
-  // }
 
   if (isLoading) {
     return <p>loading...</p>;
@@ -72,10 +76,10 @@ const Articles = () => {
         Filter by keywords
       </Typography>
       <TextField
-        onChange={({ target: { value } }) => setText(value)}
+        onChange={handleChange}
         id='outlined-basic'
         variant='outlined'
-        value={text}
+        value={searchTerm}
         placeholder='The most successful IT companies in 2020'
         sx={{
           width: '600px',
@@ -140,7 +144,7 @@ const Articles = () => {
                   }}
                   variant='h2'
                 >
-                  {title}
+                  {highlightSearchTerm(title)}
                 </Typography>
                 <Typography
                   sx={{
@@ -156,7 +160,7 @@ const Articles = () => {
                   }}
                   variant='inherit'
                 >
-                  {summary}
+                  {highlightSearchTerm(summary)}
                 </Typography>
                 <Link
                   className={styles.link}
